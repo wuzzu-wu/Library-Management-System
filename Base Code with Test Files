@@ -1,0 +1,217 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+
+class Book {
+private:
+    std::string bookID;
+    std::string title;
+    std::string author;
+    std::string isbn;
+    bool isBorrowed;
+
+public:
+    Book(std::string id, std::string t, std::string a, std::string i)
+        : bookID(id), title(t), author(a), isbn(i), isBorrowed(false) {}
+
+    void borrowBook() {
+        if (!isBorrowed) {
+            isBorrowed = true;
+        } else {
+            std::cout << "Book already borrowed!" << std::endl;
+        }
+    }
+
+    void returnBook() {
+        if (isBorrowed) {
+            isBorrowed = false;
+        } else {
+            std::cout << "Book is not borrowed!" << std::endl;
+        }
+    }
+
+    void displayDetails() const {
+        std::cout << "Book ID: " << bookID << "\nTitle: " << title 
+                  << "\nAuthor: " << author << "\nISBN: " << isbn 
+                  << "\nStatus: " << (isBorrowed ? "Borrowed" : "Available") << std::endl;
+    }
+
+    std::string getTitle() const { return title; }
+    std::string getAuthor() const { return author; }
+    std::string getID() const { return bookID; }
+    bool getStatus() const { return isBorrowed; }
+};
+
+class User {
+private:
+    std::string userID;
+    std::string name;
+    std::vector<Book*> borrowedBooks;
+
+public:
+    User(std::string id, std::string n) : userID(id), name(n) {}
+
+    void borrowBook(Book& book) {
+        if (!book.getStatus()) {
+            book.borrowBook();
+            borrowedBooks.push_back(&book);
+        } else {
+            std::cout << "Book already borrowed!" << std::endl;
+        }
+    }
+
+    void returnBook(Book& book) {
+        auto it = std::find(borrowedBooks.begin(), borrowedBooks.end(), &book);
+        if (it != borrowedBooks.end()) {
+            book.returnBook();
+            borrowedBooks.erase(it);
+        } else {
+            std::cout << "Book not found in borrowed list!" << std::endl;
+        }
+    }
+
+    void displayUserDetails() const {
+        std::cout << "User ID: " << userID << "\nName: " << name << "\nBorrowed Books:" << std::endl;
+        for (const auto& book : borrowedBooks) {
+            book->displayDetails();
+        }
+    }
+
+    std::string getID() const { return userID; }
+};
+
+class Library {
+private:
+    std::vector<Book> books;
+    std::vector<User> users;
+
+public:
+    void addBook(const Book& book) {
+        books.push_back(book);
+    }
+
+    void removeBook(const std::string& bookID) {
+        books.erase(std::remove_if(books.begin(), books.end(),
+            [&bookID](const Book& book) { return book.getID() == bookID; }), books.end());
+    }
+
+    void searchBookByTitle(const std::string& title) const {
+        for (const auto& book : books) {
+            if (book.getTitle() == title) {
+                book.displayDetails();
+                return;
+            }
+        }
+        std::cout << "Book not found!" << std::endl;
+    }
+
+    void searchBookByAuthor(const std::string& author) const {
+        for (const auto& book : books) {
+            if (book.getAuthor() == author) {
+                book.displayDetails();
+                return;
+            }
+        }
+        std::cout << "Book not found!" << std::endl;
+    }
+
+    void addUser(const User& user) {
+        users.push_back(user);
+    }
+
+    void removeUser(const std::string& userID) {
+        users.erase(std::remove_if(users.begin(), users.end(),
+            [&userID](const User& user) { return user.getID() == userID; }), users.end());
+    }
+
+    void borrowBook(const std::string& userID, const std::string& bookID) {
+        auto userIt = std::find_if(users.begin(), users.end(),
+            [&userID](const User& user) { return user.getID() == userID; });
+
+        if (userIt == users.end()) {
+            std::cout << "User not found!" << std::endl;
+            return;
+        }
+
+        auto bookIt = std::find_if(books.begin(), books.end(),
+            [&bookID](const Book& book) { return book.getID() == bookID; });
+
+        if (bookIt == books.end()) {
+            std::cout << "Book not found!" << std::endl;
+            return;
+        }
+
+        userIt->borrowBook(*bookIt);
+    }
+
+    void returnBook(const std::string& userID, const std::string& bookID) {
+        auto userIt = std::find_if(users.begin(), users.end(),
+            [&userID](const User& user) { return user.getID() == userID; });
+
+        if (userIt == users.end()) {
+            std::cout << "User not found!" << std::endl;
+            return;
+        }
+
+        auto bookIt = std::find_if(books.begin(), books.end(),
+            [&bookID](const Book& book) { return book.getID() == bookID; });
+
+        if (bookIt == books.end()) {
+            std::cout << "Book not found!" << std::endl;
+            return;
+        }
+
+        userIt->returnBook(*bookIt);
+    }
+};
+
+void testLibrarySystem() {
+    // Create some books
+    Book book1("1", "The Great Gatsby", "F. Scott Fitzgerald", "12345");
+    Book book2("2", "1984", "George Orwell", "67890");
+
+    // Create some users
+    User user1("1", "Alice");
+    User user2("2", "Bob");
+
+    // Create a library
+    Library library;
+
+    // Add books to the library
+    library.addBook(book1);
+    library.addBook(book2);
+
+    // Add users to the library
+    library.addUser(user1);
+    library.addUser(user2);
+
+    // Borrow a book
+    library.borrowBook("1", "1");
+
+    // Display book and user details
+    std::cout << "After borrowing a book:" << std::endl;
+    book1.displayDetails();
+    user1.displayUserDetails();
+
+    // Return the book
+    library.returnBook("1", "1");
+
+    // Display book and user details
+    std::cout << "After returning the book:" << std::endl;
+    book1.displayDetails();
+    user1.displayUserDetails();
+
+    // Search for a book by title
+    std::cout << "Search for '1984':" << std::endl;
+    library.searchBookByTitle("1984");
+
+    // Search for a book by author
+    std::cout << "Search for books by 'George Orwell':" << std::endl;
+    library.searchBookByAuthor("George Orwell");
+}
+
+int main() {
+    testLibrarySystem();
+    return 0;
+}
