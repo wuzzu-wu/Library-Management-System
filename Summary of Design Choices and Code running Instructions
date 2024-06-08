@@ -1,0 +1,90 @@
+Certainly! Here's a comprehensive guide that includes documentation explaining the design choices and instructions for executing the program and running tests for the Online Library Management System.
+
+### Online Library Management System
+
+#### Design Overview
+
+The Online Library Management System is designed using Object-Oriented Programming principles in C++. The system consists of three main classes: `Book`, `User`, and `Library`, each encapsulating specific functionality.
+
+- **Book Class**: Represents a book in the library with attributes such as book ID, title, author, ISBN, and borrow status. It includes methods to borrow, return, and display book details.
+
+- **User Class**: Represents a library user with attributes like user ID, name, and a vector of borrowed books. It includes methods to borrow, return, and display user details.
+
+- **Library Class**: Manages a collection of books and users. It provides methods to add, remove, search for books, add and remove users, and borrow and return books.
+
+#### File Structure
+
+The project is structured into the following files:
+
+1. **Header Files**:
+   - `Book.h`: Header file for the `Book` class.
+   - `User.h`: Header file for the `User` class.
+   - `Library.h`: Header file for the `Library` class.
+
+2. **Source Files**:
+   - `Book.cpp`: Implementation file for the `Book` class.
+   - `User.cpp`: Implementation file for the `User` class.
+   - `Library.cpp`: Implementation file for the `Library` class.
+   - `main.cpp`: Main file that runs the tests in `test_library.cpp`.
+
+3. **Test Files**:
+   - `test_library.cpp`: File containing test cases to validate the functionality of the library system.
+
+4. **CMakeLists.txt**: CMake configuration file to build the project.
+
+#### Design Choices
+
+- **Book and User Relationship**: Each user can borrow multiple books, and each book can be borrowed by only one user at a time. The `User` class maintains a vector of pointers to borrowed `Book` objects.
+
+- **Data Structures**: The library maintains vectors of `Book` and `User` objects to store its collection. Vectors are used because they allow dynamic size adjustment and provide efficient sequential access.
+
+- **Functionality in Classes**: Methods in each class (`Book`, `User`, `Library`) are designed to encapsulate the behavior related to that entity. This approach ensures modularity and maintains separation of concerns.
+
+- **Error Handling**: Methods check for errors such as attempting to borrow a book that is already borrowed or returning a book that is not borrowed. Error messages are printed to the console to indicate these conditions.
+
+#### Instructions
+
+To execute the program and run tests:
+
+1. **Clone the Repository**:
+
+   ```bash
+   git clone <repository-url>
+   ```
+
+2. **Navigate to the Project Directory**:
+
+   ```bash
+   cd Online-Library-Management-System
+   ```
+
+3. **Build the Project with CMake**:
+
+   ```bash
+   mkdir build
+   cd build
+   cmake ..
+   make
+   ```
+
+   This will compile the source files and link them to create the executable.
+
+4. **Run the Tests**:
+
+   ```bash
+   ./LibraryManagementSystem
+   ```
+
+   This command will execute the `test_library.cpp` file, which contains the tests to validate the functionality of the library system.
+
+#### Example Output
+
+Upon running the tests, the output should include information about the operations performed and the status of books and users after each operation.
+
+### Conclusion
+
+This design provides a robust foundation for an Online Library Management System using C++ and demonstrates how to implement core functionalities such as book management, user management, borrowing, and returning books.
+
+The system is modular and extensible, allowing for future enhancements such as user authentication, book categories, and more sophisticated searching and sorting algorithms.
+
+By following the instructions provided, you can build, test, and run the library management system on your local machine.
